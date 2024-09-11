@@ -1,33 +1,28 @@
-import torch
-from torch.utils.data import DataLoader, Dataset
-from modulus.architecture.fourier_net import FourierNetArch
-from modulus.architecture.modified_fourier_net import ModifiedFourierNetArch
-from modulus.architecture.dgm import DGMArch
-from modulus.architecture.multiplicative_filter_net import MultiplicativeFilterNetArch
-from modulus.architecture.siren import SirenArch
+import os
+import warnings
 
+import torch
 import numpy as np
 from sympy import Symbol, sqrt, Max
 
-import modulus
-from modulus.hydra import to_absolute_path, to_yaml, instantiate_arch
-from modulus.hydra.config import ModulusConfig
-from modulus.csv_utils.csv_rw import csv_to_dict
-from modulus.continuous.solvers.solver import Solver
-from modulus.continuous.domain.domain import Domain
-from modulus.continuous.constraints.constraint import (
+import modulus.sym
+from modulus.sym.hydra import to_absolute_path, instantiate_arch, ModulusConfig
+from modulus.sym.solver import Solver
+from modulus.sym.domain import Domain
+from modulus.sym.domain.constraint import (
     PointwiseBoundaryConstraint,
     PointwiseInteriorConstraint,
     IntegralBoundaryConstraint,
     PointwiseConstraint,
 )
-from modulus.continuous.validator.validator import PointwiseValidator
-from modulus.continuous.monitor.monitor import PointwiseMonitor
-from modulus.continuous.inferencer.inferencer import PointwiseInferencer
-from modulus.key import Key
-from modulus.PDES.navier_stokes import NavierStokes
-from modulus.PDES.basic import NormalDotVec
-from modulus.geometry.tessellation.tessellation import Tessellation
+from modulus.sym.domain.validator import PointwiseValidator
+from modulus.sym.domain.monitor import PointwiseMonitor
+from modulus.sym.key import Key
+from modulus.sym.eq.pdes.navier_stokes import NavierStokes
+from modulus.sym.eq.pdes.basic import NormalDotVec
+from modulus.sym.utils.io import csv_to_dict
+from modulus.sym.geometry.tessellation import Tessellation
+
 
 import stl
 from stl import mesh
@@ -37,9 +32,9 @@ import pandas as pd
 import sympy
 
 
-@modulus.main(config_path="conf", config_name="conf")
+@modulus.sym.main(config_path="conf", config_name="conf")
 def run(cfg: ModulusConfig) -> None:
-    print(to_yaml(cfg))
+  
 
     # path definitions
     point_path = to_absolute_path("./stl_files")
