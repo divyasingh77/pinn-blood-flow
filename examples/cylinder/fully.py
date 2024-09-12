@@ -17,6 +17,7 @@ from modulus.sym.domain.constraint import (
 )
 from modulus.sym.domain.validator import PointwiseValidator
 from modulus.sym.domain.monitor import PointwiseMonitor
+from modulus.sym.domain.inferencer import PointwiseInferencer
 from modulus.sym.key import Key
 from modulus.sym.eq.pdes.navier_stokes import NavierStokes
 from modulus.sym.eq.pdes.basic import NormalDotVec
