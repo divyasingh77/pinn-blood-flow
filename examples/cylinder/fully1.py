@@ -43,22 +43,12 @@ def run(cfg: ModulusConfig) -> None:
     path_outlet = point_path + "/outlet.stl"
     path_noslip = point_path + "/wall.stl"
     path_interior = point_path + "/closed.stl"
-    path_outlet_combined = point_path + '/outlet_combined.stl'
-
-    # create and save combined outlet stl
-    def combined_stl(meshes, save_path="./combined.stl"):
-        combined = mesh.Mesh(np.concatenate([m.data for m in meshes]))
-        combined.save(save_path, mode=stl.Mode.ASCII)
-
-    meshes = [mesh.Mesh.from_file(file_) for file_ in path_outlet.values()]
-    combined_stl(meshes, path_outlet_combined)
 
     # read stl files to make geometry
     inlet_mesh = Tessellation.from_stl(path_inlet, airtight=True)
     outlet_mesh  = Tessellation.from_stl(path_outlet, airtight=True)
     noslip_mesh = Tessellation.from_stl(path_noslip, airtight=True)
     interior_mesh = Tessellation.from_stl(path_interior, airtight=True)
-    outlet_combined_mesh = Tessellation.from_stl(path_outlet_combined, airtight=True)
 
     # params
     # blood density
@@ -148,7 +138,7 @@ def run(cfg: ModulusConfig) -> None:
     nodes = (
             ns.make_nodes()
             + normal_dot_vel.make_nodes()
-            + [flow_net.make_node(name="flow_network", jit=cfg.jit)]
+            + [flow_net.make_node(name="flow_network")]
     )
 
     # add constraints to solver
@@ -249,7 +239,7 @@ def run(cfg: ModulusConfig) -> None:
 
     # add pressure monitor
     pressure_outlet = PointwiseMonitor(
-        dict_outlet['outlet0_mesh'].sample_boundary(2048),
+        outlet_mesh['outlet0_mesh'].sample_boundary(2048),
         output_names=["p"],
         metrics={"pressure_outlet": lambda var: torch.mean(var["p"])},
         nodes=nodes,
@@ -265,7 +255,7 @@ def run(cfg: ModulusConfig) -> None:
     domain.add_monitor(umax_inlet)
 
     umax_outlet = PointwiseMonitor(
-        dict_outlet['outlet0_mesh'].sample_boundary(4096),
+        outlet_mesh['outlet0_mesh'].sample_boundary(4096),
         output_names=["u"],
         metrics={"umax_outlet": lambda var: torch.max(var["u"])},
         nodes=nodes,
