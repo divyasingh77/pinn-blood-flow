@@ -59,9 +59,9 @@ def run(cfg: ModulusConfig) -> None:
     dict_outlet = {}
     for idx_, key_ in enumerate(dict_path_outlet):
         dict_outlet['outlet'+str(idx_)+'_mesh'] = Tessellation.from_stl(dict_path_outlet[key_], airtight=True)
-    noslip_mesh = Tessellation.from_stl(path_noslip, airtight=True)
-    interior_mesh = Tessellation.from_stl(path_interior, airtight=True)
-    outlet_combined_mesh = Tessellation.from_stl(path_outlet_combined, airtight=True)
+        noslip_mesh = Tessellation.from_stl(path_noslip, airtight=True)
+        interior_mesh = Tessellation.from_stl(path_interior, airtight=True)
+        outlet_combined_mesh = Tessellation.from_stl(path_outlet_combined, airtight=True)
 
     # params
     # blood density
@@ -106,11 +106,10 @@ def run(cfg: ModulusConfig) -> None:
     print('Overall geometry center: ', center)
 
     # scale and center the geometry files
-    normalize_mesh(inlet_mesh, center, scale)
-    for idx_, key_ in enumerate(dict_outlet):
-      normalize_mesh(dict_outlet[key_], center, scale)
-      normalize_mesh(noslip_mesh, center, scale)
-      normalize_mesh(interior_mesh, center, scale)
+    inlet_mesh = normalize_mesh(inlet_mesh, center, scale)
+    outlet_mesh = normalize_mesh(outlet_mesh, center, scale)
+    noslip_mesh = normalize_mesh(noslip_mesh, center, scale)
+    interior_mesh = normalize_mesh(interior_mesh, center, scale)
 
     # center of inlet in original coordinate system
     inlet_center_abs = (0, 0, 0)
@@ -178,11 +177,11 @@ def run(cfg: ModulusConfig) -> None:
     for idx_, key_ in enumerate(dict_outlet):
         outlet = PointwiseBoundaryConstraint(
             nodes=nodes,
-            geometry=dict_outlet[key_],
+            geometry=outlet_mesh,
             outvar={"p": 0},
             batch_size=cfg.batch_size.outlet,
         )
-        domain.add_constraint(outlet, "outlet"+str(idx_))
+        domain.add_constraint(outlet, "outlet")
 
     # no slip
     no_slip = PointwiseBoundaryConstraint(
@@ -214,49 +213,7 @@ def run(cfg: ModulusConfig) -> None:
     )
     domain.add_constraint(integral_continuity, "integral_continuity_1")
 
-    # add inferencer
-    inferencer_derivatives_boundary = PointwiseInferencer(
-        noslip_mesh.sample_boundary(250000),
-        ["p", "u", "v", "w",
-         "u__x", "u__y", "u__z",
-         "v__x", "v__y", "v__z",
-         "w__x", "w__y", "w__z",
-         "p__x", "p__y", "p__z",
-         "u__x__x", "u__y__y", "u__z__z",
-         "v__x__x", "v__y__y", "v__z__z",
-         "w__x__x", "w__y__y", "w__z__z",
-         "p__x__x", "p__y__y", "p__z__z",
-         "u__x__y", "u__x__z", "u__y__z",
-         "v__x__y", "v__x__z", "v__y__z",
-         "w__x__y", "w__x__z", "w__y__z",
-         "p__x__y", "p__x__z", "p__y__z",
-         "normal_x", "normal_y", "normal_z", "normal_dot_vel"
-         ],
-        nodes=nodes,
-    )
-    domain.add_inferencer(inferencer_derivatives_boundary, "inferencer_derivatives_boundary")
 
-    # add inferencer
-    inferencer_derivatives_interior = PointwiseInferencer(
-        noslip_mesh.sample_interior(250000),
-        ["p", "u", "v", "w",
-         "u__x", "u__y", "u__z",
-         "v__x", "v__y", "v__z",
-         "w__x", "w__y", "w__z",
-         "p__x", "p__y", "p__z",
-         "u__x__x", "u__y__y", "u__z__z",
-         "v__x__x", "v__y__y", "v__z__z",
-         "w__x__x", "w__y__y", "w__z__z",
-         "p__x__x", "p__y__y", "p__z__z",
-         "u__x__y", "u__x__z", "u__y__z",
-         "v__x__y", "v__x__z", "v__y__z",
-         "w__x__y", "w__x__z", "w__y__z",
-         "p__x__y", "p__x__z", "p__y__z",
-         "sdf__x", "sdf__y", "sdf__z", "sdf"
-         ],
-        nodes=nodes,
-    )
-    domain.add_inferencer(inferencer_derivatives_interior, "inferencer_derivatives_interior")
 
     # add validation data (CFD data from MODSIM)
     mapping = {
