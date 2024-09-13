@@ -200,7 +200,7 @@ def run(cfg: ModulusConfig) -> None:
     # Integral Continuity 1
     integral_continuity = IntegralBoundaryConstraint(
         nodes=nodes,
-        geometry=dict_outlet['outlet0_mesh'],
+        geometry=outlet_mesh,
         outvar={"normal_dot_vel": 0.11780972450961724 * scale**2}, # (2*pi*vmax) * integrate{r*(1-r^2/R^2) dr from r=0 to R} 
         batch_size=cfg.batch_size.num_integral_continuity,
         integral_batch_size=cfg.batch_size.integral_continuity,
