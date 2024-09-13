@@ -39,29 +39,26 @@ def run(cfg: ModulusConfig) -> None:
 
     # path definitions
     point_path = to_absolute_path("./stl_files")
-    inlet_mesh = Tessellation.from_stl(
-        point_path + "/inlet.stl", airtight=True
-    )
-    outlet_mesh = Tessellation.from_stl(
-        point_path + "/outlet.stl", airtight=True
-    )
-    noslip_mesh = Tessellation.from_stl(
-        point_path + "/wall.stl", airtight=True
-    )
-    interior_mesh = Tessellation.from_stl(
-        point_path + "/closed.stl", airtight=True
-    )
+    path_inlet = point_path + "/inlet.stl"
+    path_outlet = point_path + "/outlet.stl"
+    path_noslip = point_path + "/wall.stl"
+    path_interior = point_path + "/closed.stl"
+    path_outlet_combined = point_path + '/outlet_combined.stl'
+
     # create and save combined outlet stl
     def combined_stl(meshes, save_path="./combined.stl"):
         combined = mesh.Mesh(np.concatenate([m.data for m in meshes]))
         combined.save(save_path, mode=stl.Mode.ASCII)
 
-    meshes = [mesh.Mesh.from_file(file_) for file_ in dict_path_outlet.values()]
+    meshes = [mesh.Mesh.from_file(file_) for file_ in path_outlet.values()]
     combined_stl(meshes, path_outlet_combined)
 
-    outlet_combined_mesh = Tessellation.from_stl(
-        point_path + "/outlet_combined.stl", airtight=True
-    )
+    # read stl files to make geometry
+    inlet_mesh = Tessellation.from_stl(path_inlet, airtight=True)
+    outlet_mesh  = Tessellation.from_stl(path_outlet, airtight=True)
+    noslip_mesh = Tessellation.from_stl(path_noslip, airtight=True)
+    interior_mesh = Tessellation.from_stl(path_interior, airtight=True)
+    outlet_combined_mesh = Tessellation.from_stl(path_outlet_combined, airtight=True)
 
     # params
     # blood density
@@ -174,15 +171,14 @@ def run(cfg: ModulusConfig) -> None:
     domain.add_constraint(inlet, "inlet")
 
     # outlet
-    for idx_, key_ in enumerate(dict_outlet):
-        outlet = PointwiseBoundaryConstraint(
-            nodes=nodes,
-            geometry=outlet_mesh,
-            outvar={"p": 0},
-            batch_size=cfg.batch_size.outlet,
-        )
-        domain.add_constraint(outlet, "outlet")
-
+    outlet = PointwiseBoundaryConstraint(
+        nodes=nodes,
+        geometry=outlet_mesh,
+        outvar={"p": 0},
+        batch_size=cfg.batch_size.outlet,
+    )
+    domain.add_constraint(outlet, "outlet")
+                                                            
     # no slip
     no_slip = PointwiseBoundaryConstraint(
         nodes=nodes,
