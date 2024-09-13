@@ -194,7 +194,6 @@ def run(cfg: ModulusConfig) -> None:
         "U:1": "v",
         "U:2": "w",
         "p": "p",
-        "wss": "u__y"
     }
     #modsim entire geometry
     modsim_var = csv_to_dict(to_absolute_path("modsim/modsim_wfenz_hiresbl.csv"), mapping)
@@ -205,7 +204,7 @@ def run(cfg: ModulusConfig) -> None:
     modsim_outvar = {
         key: value 
         for key, value in modsim_var.items()
-        if key in ["u", "v", "w", "p", "u__y"]
+        if key in ["u", "v", "w", "p"]
     }
     modsim_validator = PointwiseValidator(
         modsim_invar, modsim_outvar, nodes, batch_size=4096,
@@ -221,7 +220,7 @@ def run(cfg: ModulusConfig) -> None:
     modsim_outvar = {
         key: value 
         for key, value in modsim_var.items()
-        if key in ["u", "v", "w", "p", "u__y"]
+        if key in ["u", "v", "w", "p"]
     }
     modsim_validator = PointwiseValidator(
         modsim_invar, modsim_outvar, nodes, batch_size=4096,
