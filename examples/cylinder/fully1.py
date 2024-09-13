@@ -39,13 +39,18 @@ def run(cfg: ModulusConfig) -> None:
 
     # path definitions
     point_path = to_absolute_path("./stl_files")
-    path_inlet = point_path + "/inlet.stl"
-    dict_path_outlet = {'path_outlet': point_path + "/outlet.stl",
-                        }
-    path_noslip = point_path + "/wall.stl"
-    path_interior = point_path + "/closed.stl"
-    path_outlet_combined = point_path + '/outlet_combined.stl'
-
+    inlet_mesh = Tessellation.from_stl(
+        point_path + "/inlet.stl", airtight=True
+    )
+    outlet_mesh = Tessellation.from_stl(
+        point_path + "/outlet.stl", airtight=True
+    )
+    noslip_mesh = Tessellation.from_stl(
+        point_path + "/wall.stl", airtight=True
+    )
+    interior_mesh = Tessellation.from_stl(
+        point_path + "/closed.stl", airtight=True
+    )
     # create and save combined outlet stl
     def combined_stl(meshes, save_path="./combined.stl"):
         combined = mesh.Mesh(np.concatenate([m.data for m in meshes]))
@@ -54,14 +59,9 @@ def run(cfg: ModulusConfig) -> None:
     meshes = [mesh.Mesh.from_file(file_) for file_ in dict_path_outlet.values()]
     combined_stl(meshes, path_outlet_combined)
 
-    # read stl files to make geometry
-    inlet_mesh = Tessellation.from_stl(path_inlet, airtight=True)
-    dict_outlet = {}
-    for idx_, key_ in enumerate(dict_path_outlet):
-        dict_outlet['outlet'+str(idx_)+'_mesh'] = Tessellation.from_stl(dict_path_outlet[key_], airtight=True)
-        noslip_mesh = Tessellation.from_stl(path_noslip, airtight=True)
-        interior_mesh = Tessellation.from_stl(path_interior, airtight=True)
-        outlet_combined_mesh = Tessellation.from_stl(path_outlet_combined, airtight=True)
+    outlet_combined_mesh = Tessellation.from_stl(
+        point_path + "/outlet_combined.stl", airtight=True
+    )
 
     # params
     # blood density
