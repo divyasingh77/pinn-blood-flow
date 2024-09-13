@@ -199,8 +199,6 @@ def run(cfg: ModulusConfig) -> None:
     )
     domain.add_constraint(integral_continuity, "integral_continuity_1")
 
-
-
     # add validation data (CFD data from MODSIM)
     mapping = {
         "Points:0": "x",
@@ -239,7 +237,7 @@ def run(cfg: ModulusConfig) -> None:
 
     # add pressure monitor
     pressure_outlet = PointwiseMonitor(
-        outlet_mesh['outlet0_mesh'].sample_boundary(2048),
+        outlet_mesh.sample_boundary(2048),
         output_names=["p"],
         metrics={"pressure_outlet": lambda var: torch.mean(var["p"])},
         nodes=nodes,
@@ -255,7 +253,7 @@ def run(cfg: ModulusConfig) -> None:
     domain.add_monitor(umax_inlet)
 
     umax_outlet = PointwiseMonitor(
-        outlet_mesh['outlet0_mesh'].sample_boundary(4096),
+        outlet_mesh.sample_boundary(4096),
         output_names=["u"],
         metrics={"umax_outlet": lambda var: torch.max(var["u"])},
         nodes=nodes,
