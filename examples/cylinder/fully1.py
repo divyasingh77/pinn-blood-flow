@@ -99,30 +99,16 @@ def run(cfg: ModulusConfig) -> None:
     interior_mesh = normalize_mesh(interior_mesh, center, scale)
 
     # center of inlet in original coordinate system
-    inlet_center_abs = (0, 0, 0)
-    print("inlet_center_abs:", inlet_center_abs)
-
-    # scale end center the inlet center
-    inlet_center = list((np.array(inlet_center_abs) - np.array(center)) * scale)
-    print("inlet_center:", inlet_center)
-
-    # inlet normal vector; should point into the cylinder, not outwards
     inlet_normal = (1, 0, 0)
-    print("inlet_normal:", inlet_normal)
-
-    # inlet area
     inlet_area = (0.5**2 * np.pi) * (scale**2)
-
-    # inlet radius
+    inlet_center = (-2.5, 0, 0)
     inlet_radius = 0.5
-    print("inlet_radius:", inlet_radius)
     
     # Volumetric flow (= to mass flow for incompressible fluid) at inlet
     # (2*pi*vmax) * integrate{r*(1-r^2/R^2) dr from r=0 to R}
     inlet_volumetric_flow = inlet_vel/2. * inlet_area
     print("Volumetric flow at inlet:", inlet_volumetric_flow)
 
-    # make aneurysm domain
     domain = Domain()
 
     # make list of nodes to unroll graph on
@@ -212,18 +198,34 @@ def run(cfg: ModulusConfig) -> None:
     }
     #modsim entire geometry
     modsim_var = csv_to_dict(to_absolute_path("modsim/modsim_wfenz_hiresbl.csv"), mapping)
-    modsim_invar = {key: value for key, value in modsim_var.items() if key in ["x", "y", "z"]}
+    modsim_invar = {
+        key: value for key, value in modsim_var.items() if key in ["x", "y", "z"]
+    }
     modsim_invar = normalize_invar(modsim_invar, center, scale, dims=3)
-    modsim_outvar = {key: value for key, value in modsim_var.items() if key in ["u", "v", "w", "p", "u__y"]}
-    modsim_validator = PointwiseValidator(modsim_invar, modsim_outvar, nodes, batch_size=4096)
+    modsim_outvar = {
+        key: value 
+        for key, value in modsim_var.items()
+        if key in ["u", "v", "w", "p", "u__y"]
+    }
+    modsim_validator = PointwiseValidator(
+        modsim_invar, modsim_outvar, nodes, batch_size=4096,
+    )
     domain.add_validator(modsim_validator, "modsim_hiresbl_validator")
 
     #modsim plane slice
     modsim_var = csv_to_dict(to_absolute_path("modsim/modsim_plane_slice.csv"), mapping)
-    modsim_invar = {key: value for key, value in modsim_var.items() if key in ["x", "y", "z"]}
+    modsim_invar = {
+        key: value for key, value in modsim_var.items() if key in ["x", "y", "z"]
+    }
     modsim_invar = normalize_invar(modsim_invar, center, scale, dims=3)
-    modsim_outvar = {key: value for key, value in modsim_var.items() if key in ["u", "v", "w", "p", "u__y"]}
-    modsim_validator = PointwiseValidator(modsim_invar, modsim_outvar, nodes, batch_size=4096)
+    modsim_outvar = {
+        key: value 
+        for key, value in modsim_var.items()
+        if key in ["u", "v", "w", "p", "u__y"]
+    }
+    modsim_validator = PointwiseValidator(
+        modsim_invar, modsim_outvar, nodes, batch_size=4096,
+    )
     domain.add_validator(modsim_validator, "modsim_plane_slice_validator")
 
     # add pressure monitor
