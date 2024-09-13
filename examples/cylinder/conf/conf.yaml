@@ -12,12 +12,12 @@ optimizer:
 
 scheduler:
   decay_rate: 0.9
-  decay_steps: 4000
+  decay_steps: 200
 
 training:
   rec_results_freq : 1000
   rec_constraint_freq: 1000
-  max_steps : 2000
+  max_steps : 200
 
 batch_size:
   inlet: 2000
