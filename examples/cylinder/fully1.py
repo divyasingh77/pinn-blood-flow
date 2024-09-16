@@ -148,7 +148,7 @@ def run(cfg: ModulusConfig) -> None:
         output_keys=[Key("u"), Key("v"), Key("w"), Key("p")],
         cfg=cfg.arch.fully_connected,
         layer_size=256,
-        nr_layers=10
+        nr_layers=3
     )
     nodes = (
             ns.make_nodes()
