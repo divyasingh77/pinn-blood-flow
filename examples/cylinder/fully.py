@@ -222,6 +222,7 @@ def run(cfg: ModulusConfig) -> None:
     modsim_outvar = {
         key: value for key, value in modsim_var.items() 
         if key in ["u", "v", "w", "p"]
+    }
     modsim_validator = PointwiseValidator(
         nodes=nodes,
         invar=modsim_invar,
