@@ -8,11 +8,11 @@ defaults :
   - _self_
 
 optimizer:
-  lr: 0.001
+  lr: 0.0005
 
 scheduler:
   decay_rate: 0.9
-  decay_steps: 200
+  decay_steps: 4000
 
 training:
   rec_results_freq : 10000
@@ -20,9 +20,9 @@ training:
   max_steps : 20000
 
 batch_size:
-  inlet: 20000
-  outlet: 10000
-  no_slip: 20000
-  interior: 30000
+  inlet: 2000
+  outlet: 1000
+  no_slip: 2000
+  interior: 3000
   num_integral_continuity: 5
-  integral_continuity: 80000
+  integral_continuity: 8000
