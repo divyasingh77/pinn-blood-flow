@@ -15,14 +15,14 @@ scheduler:
   decay_steps: 200
 
 training:
-  rec_results_freq : 1000
-  rec_constraint_freq: 1000
-  max_steps : 200
+  rec_results_freq : 10000
+  rec_constraint_freq: 10000
+  max_steps : 20000
 
 batch_size:
-  inlet: 2000
-  outlet: 1000
-  no_slip: 2000
-  interior: 3000
+  inlet: 20000
+  outlet: 10000
+  no_slip: 20000
+  interior: 30000
   num_integral_continuity: 5
-  integral_continuity: 8000
+  integral_continuity: 80000
