@@ -32,9 +32,9 @@ import pandas as pd
 import sympy
 
 
-@modulus.main(config_path="conf", config_name="conf")
+@modulus.sym.main(config_path="conf", config_name="conf")
 def run(cfg: ModulusConfig) -> None:
-    print(to_yaml(cfg))
+   
 
     # path definitions
     point_path = to_absolute_path("./stl_files")
