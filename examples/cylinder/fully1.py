@@ -3,6 +3,7 @@ import warnings
 
 import torch
 import numpy as np
+import pandas as pd
 from sympy import Symbol, sqrt, Max
 
 import modulus.sym
