@@ -3,7 +3,6 @@ import warnings
 
 import torch
 import numpy as np
-import pandas as pd
 from sympy import Symbol, sqrt, Max
 
 import modulus.sym
@@ -271,32 +270,6 @@ def run(cfg: ModulusConfig) -> None:
 
     # start solver
     slv.solve()
-
-    # Collecting results from the entire domain
-    sample_points = interior_mesh.sample_interior(10000)  # Sample 10,000 points in the interior
-    sampled_data = flow_net(sample_points)  # Run the network on the sampled points
-
-    # Extracting pressure and velocity
-    pressure = sampled_data['p']
-    velocity_u = sampled_data['u']
-    velocity_v = sampled_data['v']
-    velocity_w = sampled_data['w']
-
-    # Create a DataFrame to save results
-    results_df = pd.DataFrame({
-        'X': sample_points['x'],
-        'Y': sample_points['y'],
-        'Z': sample_points['z'],
-        'Pressure': pressure,
-        'Velocity_U': velocity_u,
-        'Velocity_V': velocity_v,
-        'Velocity_W': velocity_w
-    })
-
-    # Save results to CSV
-    results_df.to_csv('velocity_pressure_data_all_points.csv', index=False)
-    print("Velocity and pressure data saved to 'velocity_pressure_data_all_points.csv'.")
-
 
 
 if __name__ == "__main__":
