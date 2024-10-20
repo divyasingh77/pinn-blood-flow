@@ -49,15 +49,7 @@ def run(cfg: ModulusConfig) -> None:
     interior_mesh = Tessellation.from_stl(
         point_path + "/closed.stl", airtight=True
     )
-    path_outlet_combined = point_path + '/outlet_combined.stl'
 
-    # create and save combined outlet stl
-    def combined_stl(meshes, save_path="./combined.stl"):
-        combined = mesh.Mesh(np.concatenate([m.data for m in meshes]))
-        combined.save(save_path, mode=stl.Mode.ASCII)
-
-    meshes = [mesh.Mesh.from_file(file_) for file_ in outlet_mesh.values()]
-    combined_stl(meshes, path_outlet_combined)
 
     # params
     # blood density
