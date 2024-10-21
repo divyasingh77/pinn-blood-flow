@@ -7,7 +7,7 @@ import numpy as np
 from sympy import Symbol, sqrt, Max
 
 import modulus.sym
-from modulus.sym.architecture.fourier_net import FourierNetArch
+from modulus.sym.architecture import FourierNetArch
 from modulus.sym.hydra import to_absolute_path, instantiate_arch, ModulusConfig
 from modulus.sym.solver import Solver
 from modulus.sym.domain import Domain
@@ -128,7 +128,7 @@ def run(cfg: ModulusConfig) -> None:
     flow_net = FourierNetArch(
         input_keys=[Key("x"), Key("y"), Key("z")],
         output_keys=[Key("u"), Key("v"), Key("w"), Key("p")],
-        
+        cfg=cfg.arch.fourier_net,
         layer_size=256,
         nr_layers=10,
     )
