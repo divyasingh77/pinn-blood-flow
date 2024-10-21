@@ -1,7 +1,7 @@
 defaults :
   - modulus_default
   - arch:
-      - fully_connected
+      - FourierNetArch
   - scheduler: tf_exponential_lr
   - optimizer: adam
   - loss: sum
