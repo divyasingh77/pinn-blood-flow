@@ -4,9 +4,11 @@ import warnings
 import torch
 from torch.utils.data import DataLoader, Dataset
 import numpy as np
-from sympy import Symbol, sqrt, Max
+from sympy import  Symbol, Eq, sin, cos, Min, Max, Abs, log, exp, sqrt
 
+import hydra
 import modulus.sym
+from omegaconf import OmegaConf
 
 from modulus.sym.hydra import to_absolute_path, instantiate_arch, ModulusConfig
 from modulus.sym.solver import Solver
@@ -128,7 +130,9 @@ def run(cfg: ModulusConfig) -> None:
     flow_net = instantiate_arch(
         input_keys=[Key("x"), Key("y"), Key("z")],
         output_keys=[Key("u"), Key("v"), Key("w"), Key("p")],
-        cfg=cfg.arch.fourier_net,
+        frequencies=("axis", [i for i in range(10)]),
+        frequencies_params=("axis", [i for i in range(10)]),
+        cfg=cfg.arch.fourier,
         layer_size=256,
         nr_layers=10,
     )
