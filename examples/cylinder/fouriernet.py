@@ -7,7 +7,7 @@ import numpy as np
 from sympy import Symbol, sqrt, Max
 
 import modulus.sym
-from modulus.sym.architecture import FourierNetArch
+
 from modulus.sym.hydra import to_absolute_path, instantiate_arch, ModulusConfig
 from modulus.sym.solver import Solver
 from modulus.sym.domain import Domain
@@ -125,7 +125,7 @@ def run(cfg: ModulusConfig) -> None:
     # make list of nodes to unroll graph on
     ns = NavierStokes(nu=nu * scale, rho=rho, dim=3, time=False)
     normal_dot_vel = NormalDotVec(["u", "v", "w"])
-    flow_net = FourierNetArch(
+    flow_net = instantiate_arch(
         input_keys=[Key("x"), Key("y"), Key("z")],
         output_keys=[Key("u"), Key("v"), Key("w"), Key("p")],
         cfg=cfg.arch.fourier_net,
