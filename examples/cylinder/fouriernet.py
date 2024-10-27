@@ -11,6 +11,7 @@ import modulus.sym
 from omegaconf import OmegaConf
 
 from modulus.sym.hydra import to_absolute_path, instantiate_arch, ModulusConfig
+from modulus.sym.models.fourier_net import FourierNetArch
 from modulus.sym.solver import Solver
 from modulus.sym.domain import Domain
 from modulus.sym.domain.constraint import (
@@ -127,12 +128,11 @@ def run(cfg: ModulusConfig) -> None:
     # make list of nodes to unroll graph on
     ns = NavierStokes(nu=nu * scale, rho=rho, dim=3, time=False)
     normal_dot_vel = NormalDotVec(["u", "v", "w"])
-    flow_net = instantiate_arch(
+    flow_net = FourierNetArch(
         input_keys=[Key("x"), Key("y"), Key("z")],
         output_keys=[Key("u"), Key("v"), Key("w"), Key("p")],
         frequencies=("axis", [i for i in range(10)]),
         frequencies_params=("axis", [i for i in range(10)]),
-        cfg=cfg.arch.fourier,
         layer_size=256,
         nr_layers=10,
     )
