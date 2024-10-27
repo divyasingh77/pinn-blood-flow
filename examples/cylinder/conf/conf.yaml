@@ -1,7 +1,7 @@
 defaults :
   - modulus_default
   - arch:
-      -  multiplicative_filter
+      -  fully_connected
   - scheduler: tf_exponential_lr
   - optimizer: adam
   - loss: sum
